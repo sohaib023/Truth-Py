@@ -1,5 +1,5 @@
 class Rect:
-    def __init__(self, x1, y1, x2, y2, prob=0.0, text=None):
+    def __init__(self, x1=0, y1=0, x2=1, y2=1, prob=0.0, text=None):
         self.w, self.h = None, None
         self.x1, self.y1, self.x2, self.y2 = [None] * 4
 
@@ -39,7 +39,7 @@ class Rect:
         x2 = min(a.x2, b.x2)
         y2 = min(a.y2, b.y2)
         if x1 < x2 and y1 < y2:
-            return type(self)(x1, y1, x2 - x1, y2 - y1)
+            return type(self)(x1, y1, x2, y2)
         else:
             return type(self)(0, 0, 0, 0)
 
@@ -53,7 +53,7 @@ class Rect:
         x2 = max(a.x2, b.x2)
         y2 = max(a.y2, b.y2)
         if x1 < x2 and y1 < y2:
-            return type(self)(x1, y1, x2 - x1, y2 - y1)
+            return type(self)(x1, y1, x2, y2)
 
     __or__ = union
     __sub__ = area_diff
@@ -79,8 +79,19 @@ class Rect:
     def __str__(self):
         return type(self).__name__ + repr(tuple(self))
 
+    def __repr__(self):
+        return type(self).__name__ + repr(tuple(self))
+
     def move(self, x, y):
         self.x1 += x
         self.y1 += y
         self.x2 += x
         self.y2 += y
+
+    def move_im(self, x, y):
+        ''' Move function that preserve immutability and returns a copy of moved rect object. '''
+        rect = type(self)()
+        rect.set_coordinates(self.x1 + x, self.y1 + y, self.x2 + x, self.y2 + y)
+        rect.prob = self.prob
+        rect.text = self.text
+        return rect
