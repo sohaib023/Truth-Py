@@ -88,6 +88,14 @@ class Rect:
         self.x2 += x
         self.y2 += y
 
+    def scale(self, x, y):
+        self.x1 = int(self.x1 * x)
+        self.y1 = int(self.y1 * y)
+        self.x2 = int(self.x2 * x)
+        self.y2 = int(self.y2 * y)
+        self.w = self.x2 - self.x1
+        self.h = self.y2 - self.y1
+
     def move_im(self, x, y):
         ''' Move function that preserve immutability and returns a copy of moved rect object. '''
         rect = type(self)()
