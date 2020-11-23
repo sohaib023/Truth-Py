@@ -8,13 +8,16 @@ from .Table import Table
 
 class Document:
     def __init__(self, path):
-        tree = ET.parse(path)
-        root = tree.getroot()
-
-        self.input_file = root.attrib["InputFile"]
         self.tables = []
-        for i, obj in enumerate(root.findall(".//Table")):
-            self.tables.append(Table.from_xml_object(obj))
+        self.input_file = "N/A"
+        
+        if path:
+            tree = ET.parse(path)
+            root = tree.getroot()
+
+            self.input_file = root.attrib["InputFile"]
+            for i, obj in enumerate(root.findall(".//Table")):
+                self.tables.append(Table.from_xml_object(obj))
 
     def write_to(self, path):
         out_root = ET.Element("GroundTruth")

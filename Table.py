@@ -1,4 +1,5 @@
-from .GTElement import GTElement, Row, Column, Cell
+import cv2
+from .GTElement import GTElement, Row, Column, RowSpan, ColSpan, Cell
 
 from xml.dom import minidom
 from xml.etree import ElementTree as ET
@@ -12,7 +13,6 @@ class Table(GTElement):
         super().__init__(x0, y0, x1, y1)
         self.orientation = "unknown"
         self.gtSpans = []
-        self.cells = []
         self.gtRows = []
         self.gtCols = []
         self.gtCells = None
@@ -194,11 +194,11 @@ class Table(GTElement):
         numCols = len(self.gtCols) + 1
 
         self.gtCells = [[None for j in range(numCols)] for i in range(numRows)]
-        self.cells = []
 
         l, t, r, b = 0, 0, 0, 0
         l = self.x1
         t = self.y1
+
         for i in range(numRows):
             if i < len(self.gtRows):
                 b = self.gtRows[i].y1
@@ -213,32 +213,10 @@ class Table(GTElement):
                 cell = Cell(l, t, r, b, i, j)
 
                 self.gtCells[i][j] = cell
-                self.cells.append(cell)
 
                 l = r
             l = self.x1
             t = b
-
-    # public GTElement getSpanAtPosition(int x, int y) {
-    #   ArrayList<GTElement> elems = self.gtSpans
-    #   for(int i=0 i<elems.size() i++)
-    #       if(elems.get(i).contains(x, y))
-    #           return elems.get(i)
-
-    #   return null
-    # }
-        
-    # def getElementAtPosition(self, x, y):
-    #   cols = self.gtCols
-    #   for i in range(len(self.gtCols)):
-    #       if self.gtCols[i].contains(x,y)
-    #           return self.gtCols[i]
-
-    #   rows = self.gtRows
-    #   for(int i=0 i<rows.size() i++)
-    #       if(rows.get(i).contains(x, y))
-    #           return rows.get(i)
-    #   return None
 
     @staticmethod
     def from_xml_object(obj):
@@ -259,8 +237,9 @@ class Table(GTElement):
         table.gtRows.sort(key=lambda x: x.y1)
         table.gtCols.sort(key=lambda x: x.x1)
 
+        cells = []
         for cell in obj.findall(".//Cell"):
-            table.cells.append(Cell(
+            cells.append(Cell(
                     int(cell.attrib["x0"]),
                     int(cell.attrib["y0"]),
                     int(cell.attrib["x1"]),
@@ -272,18 +251,18 @@ class Table(GTElement):
                     True if cell.attrib["dontCare"]=="true" else False
                 ))
 
-        table.cells.sort(key=lambda cell: (cell.y1, cell.x1))
+        cells.sort(key=lambda cell: (cell.y1, cell.x1))
 
         numRows = len(table.gtRows) + 1
         numCols = len(table.gtCols) + 1
 
-        if len(table.cells) != numRows * numCols:
+        if len(cells) != numRows * numCols:
             print("Number of cells does not match rows*columns.")
             return
 
         table.gtCells = [[None for j in range(numCols)] for i in range(numRows)]
 
-        for cell in table.cells:
+        for cell in cells:
             table.gtCells[cell.startRow][cell.startCol] = cell
 
         table.__populateSpansFromCells()
@@ -347,3 +326,19 @@ class Table(GTElement):
         for elem in (self.gtRows + self.gtCols + self.gtSpans):
             elem.move(x, y)
         self.evaluateCells()
+
+    def visualize(self, image):
+        assert image.shape[2] == 3
+
+        self.evaluateCells()
+
+        for row in self.gtCells:
+            for cell in row:
+                if cell.dontCare:
+                    continue
+
+                cv2.line(image, (cell.x1, cell.y1), (cell.x2, cell.y1), (0, 0, 255), 3)
+                cv2.line(image, (cell.x1, cell.y2), (cell.x2, cell.y2), (0, 0, 255), 3)
+
+                cv2.line(image, (cell.x1, cell.y1), (cell.x1, cell.y2), (0, 255, 0), 3)
+                cv2.line(image, (cell.x2, cell.y1), (cell.x2, cell.y2), (0, 255, 0), 3)
