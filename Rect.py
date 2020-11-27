@@ -1,19 +1,29 @@
 class Rect:
     def __init__(self, x1=0, y1=0, x2=1, y2=1, prob=0.0, text=None):
-        self.w, self.h = None, None
+        # self.w, self.h = None, None
         self.x1, self.y1, self.x2, self.y2 = [None] * 4
 
         self.prob = prob
         self.text = text
         self.set_coordinates(x1, y1, x2, y2)
 
-    def set_x2(self, x2):
-        self.x2 = x2
-        self.w = self.x2 - self.x1
+    @property
+    def w(self):
+        return (self.x2 - self.x1)
 
-    def set_y2(self, y2):
-        self.y2 = y2
-        self.h = self.y2 - self.y1
+    @w.setter
+    def w(self, val):
+        assert val > 0
+        self.x2 = self.x1 + val
+
+    @property
+    def h(self):
+        return (self.y2 - self.y1)
+
+    @h.setter
+    def h(self, val):
+        assert val > 0
+        self.y2 = self.y1 + val
 
     def set_coordinates(self, x1, y1, x2, y2):
         w = x2 - x1
@@ -21,7 +31,6 @@ class Rect:
         if x1 > x2 or y1 > y2:
             raise ValueError("Coordinates are invalid")
         self.x1, self.y1, self.x2, self.y2 = x1, y1, x2, y2
-        self.w, self.h = w, h
 
     def area_diff(self, other):
         """calculates the area of box that is non-intersecting with 'other' rect"""
