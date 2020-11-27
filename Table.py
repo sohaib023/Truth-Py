@@ -104,9 +104,9 @@ class Table(GTElement):
         for i in range(startCell.startCol + 1, endCell.endCol + 1):
             temp = self.gtCells[startCell.startRow][i]
             temp.dontCare = True
-            startCell.set_x2(temp.x2)
+            startCell.x2 = temp.x2
             if temp.y2 > startCell.y2:
-                startCell.set_y2(temp.y2)
+                startCell.y2 = temp.y2
 
             for j in range(startCell.startRow + 1, startCell.endRow + 1):
                 self.gtCells[j][i].dontCare = True
@@ -129,9 +129,9 @@ class Table(GTElement):
         for i in range(startCell.startRow + 1, endCell.endRow + 1):
             temp = self.gtCells[i][startCell.startCol]
             temp.dontCare = True
-            startCell.set_y2(temp.y2)
+            startCell.y2 = temp.y2
             if temp.x2 > startCell.x2:
-                startCell.set_x2(temp.x2)
+                startCell.x2 = temp.x2
 
             for j in range(startCell.startCol + 1, startCell.endCol + 1):
                 self.gtCells[i][j].dontCare = True
@@ -174,7 +174,7 @@ class Table(GTElement):
 
                 if cell.dontCare is False:
                     if cell.startCol != cell.endCol:
-                        cell.set_x2(self.gtCells[i][j + 1].x1)
+                        cell.x2 = self.gtCells[i][j + 1].x1
                         for i1 in range(cell.startRow, cell.endRow + 1):
                             y1 = rowCenters[i1]
                             x1 = colCenters[cell.startCol]
