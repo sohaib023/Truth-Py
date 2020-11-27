@@ -29,6 +29,7 @@ class Rect:
         w = x2 - x1
         h = y2 - y1
         if x1 > x2 or y1 > y2:
+            print((x1, y1, x2, y2))
             raise ValueError("Coordinates are invalid")
         self.x1, self.y1, self.x2, self.y2 = x1, y1, x2, y2
 
@@ -47,7 +48,7 @@ class Rect:
         y1 = max(a.y1, b.y1)
         x2 = min(a.x2, b.x2)
         y2 = min(a.y2, b.y2)
-        if x1 < x2 and y1 < y2:
+        if x1 <= x2 and y1 <= y2:
             return type(self)(x1, y1, x2, y2)
         else:
             return type(self)(0, 0, 0, 0)
@@ -61,7 +62,7 @@ class Rect:
         y1 = min(a.y1, b.y1)
         x2 = max(a.x2, b.x2)
         y2 = max(a.y2, b.y2)
-        if x1 < x2 and y1 < y2:
+        if x1 <= x2 and y1 <= y2:
             return type(self)(x1, y1, x2, y2)
 
     __or__ = union
