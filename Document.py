@@ -7,7 +7,7 @@ from .GTElement import GTElement, Row, Column, Cell
 from .Table import Table
 
 class Document:
-    def __init__(self, path):
+    def __init__(self, path=None):
         self.tables = []
         self.input_file = "N/A"
         
