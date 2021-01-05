@@ -15,7 +15,9 @@ class Document:
             tree = ET.parse(path)
             root = tree.getroot()
 
-            self.input_file = root.attrib["InputFile"]
+            if "InputFile" in root.attrib:
+                self.input_file = root.attrib["InputFile"]
+                
             for i, obj in enumerate(root.findall(".//Table")):
                 self.tables.append(Table.from_xml_object(obj))
 

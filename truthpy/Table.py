@@ -227,7 +227,8 @@ class Table(GTElement):
                 int(obj.attrib["y1"]),
             )
 
-        table.orientation = obj.attrib['orientation']
+        if 'orientation' in obj.attrib:
+            table.orientation = obj.attrib['orientation']
 
         for row in obj.findall(".//Row"):
             table.gtRows.append(Row(table.x1, int(row.attrib["y0"]), table.x2))
