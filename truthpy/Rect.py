@@ -1,6 +1,5 @@
 class Rect:
     def __init__(self, x1=0, y1=0, x2=1, y2=1, prob=0.0, text=None):
-        # self.w, self.h = None, None
         self.x1, self.y1, self.x2, self.y2 = [None] * 4
 
         self.prob = prob
@@ -92,24 +91,31 @@ class Rect:
     def __repr__(self):
         return type(self).__name__ + repr(tuple(self))
 
-    def move(self, x, y):
-        self.x1 += x
-        self.y1 += y
-        self.x2 += x
-        self.y2 += y
+    def move(self, x, y, inplace=True):
+        if inplace:
+            self.x1 += x
+            self.y1 += y
+            self.x2 += x
+            self.y2 += y
+            return self
+        else:
+            rect = type(self)()
+            rect.set_coordinates(self.x1 + x, self.y1 + y, self.x2 + x, self.y2 + y)
+            rect.prob = self.prob
+            rect.text = self.text
+            return rect
 
-    def scale(self, x, y):
-        self.x1 = int(self.x1 * x)
-        self.y1 = int(self.y1 * y)
-        self.x2 = int(self.x2 * x)
-        self.y2 = int(self.y2 * y)
-        self.w = self.x2 - self.x1
-        self.h = self.y2 - self.y1
 
-    def move_im(self, x, y):
-        ''' Move function that preserve immutability and returns a copy of moved rect object. '''
-        rect = type(self)()
-        rect.set_coordinates(self.x1 + x, self.y1 + y, self.x2 + x, self.y2 + y)
-        rect.prob = self.prob
-        rect.text = self.text
-        return rect
+    def scale(self, x, y, inplace=True):
+        if inplace:
+            self.x1 = int(self.x1 * x)
+            self.y1 = int(self.y1 * y)
+            self.x2 = int(self.x2 * x)
+            self.y2 = int(self.y2 * y)
+            return self
+        else:
+            rect = type(self)()
+            rect.set_coordinates(*tuple(map(int, [self.x1 * x, self.y1 * y, self.x2 * x, self.y2 * y])))
+            rect.prob = self.prob
+            rect.text = self.text
+            return rect
